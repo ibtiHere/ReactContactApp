@@ -8,24 +8,38 @@ function App() {
   const LOCAL_STORAGE_KEY = "contacts";
   const [contacts, setContacts] = useState([]);
 
+  // Add contact handler
   const addContactHandler = (contact) => {
-    setContacts([...contacts, { id: Date.now(), ...contact }]);
+    const updatedContacts = [...contacts, { id: Date.now(), ...contact }];
+    setContacts(updatedContacts);
   };
 
+  // Delete contact handler
+  const deleteContactHandler = (id) => {
+    const updatedContacts = contacts.filter((contact) => contact.id !== id);
+    setContacts(updatedContacts);
+  };
+
+  // Load contacts from localStorage on initial render
   useEffect(() => {
-    const retrieveContacts = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY));
-    if (retrieveContacts) setContacts(retrieveContacts);
+    const storedContacts = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY));
+    if (storedContacts) {
+      setContacts(storedContacts);
+    }
   }, []);
 
+  // Save contacts to localStorage whenever they change
   useEffect(() => {
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(contacts));
+    if (contacts.length > 0) { // Save only if contacts is not empty
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(contacts));
+    }
   }, [contacts]);
 
   return (
     <div className='ui container'>
       <Header />
       <Addcontact addContactHandler={addContactHandler} />
-      <Contactlist contacts={contacts} />
+      <Contactlist contacts={contacts} deleteContactHandler={deleteContactHandler} />
     </div>
   );
 }
